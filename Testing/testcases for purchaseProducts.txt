@@ -1,0 +1,86 @@
+Assume only following products and inventory count exists in db
+id product    inventory count
+1  iphone 6s = 3
+2  Nexus = 2
+3  Sony bravia = 0 
+4  Bench Shirt = 1
+
+user information
+user_id   username     password    api key id api key  salt  
+1         admin         fnw          wef      wfwefe   wfwefwef
+2         john           wfjnw        wfwfw    heeg3    g353gg
+
+Carts table have following information
+cart_id   item_list  total_price   cart_status   user_id 
+1         NULL       0             empty        1
+
+
+
+test case for creating a cart 
+
+//Success case For user "john" as no cart exists for him
+$url = "http://localhost/api/purchaseProducts.php";
+$post = array('action'=>'createCart','userName'=>urlencode('john'),'apiKeyId'=>urlencode($apiKeyId),’requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+//failure case for user admin as cart already exists 
+$url = "http://localhost/api/purchaseProducts.php";
+$post = array('action'=>'createCart','userName'=>urlencode('admin'),'apiKeyId'=>urlencode($apiKeyId),’requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));  
+
+
+
+
+test case for adding products to cart
+
+//failure case due to no cart for john
+$productList = urlencode(json_encode(array("iphone 6s"=>2,"Nexus"=>2,"Bench Shirt"=>1)));
+$url = "http://localhost/api/purchaseProducts.php";
+$post= array('action'=>'addProductsToCart','productList'=>$productList,'userName'=>'john','apiKeyId'=>$apiKeyId,'requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+//Success case for user 'admin'
+$productList = urlencode(json_encode(array("iphone 6s"=>2,"Nexus"=>2,"Bench Shirt"=>1)));
+$url = "http://localhost/api/purchaseProducts.php";
+$post= array('action'=>'addProductsToCart','productList'=>$productList,'userName'=>'admin','apiKeyId'=>$apiKeyId,'requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+
+//failure case by giving product titles not in system
+$productList = urlencode(json_encode(array("iphone 5s"=>2,"iphone 4s"=>2,"iphone 3s"=>1)));
+$url = "http://localhost/api/purchaseProducts.php";
+$post= array('action'=>'addProductsToCart','productList'=>$productList,'userName'=>'admin','apiKeyId'=>$apiKeyId,'requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+//failure case by giving product titles that currently have no stock or quantity greater than inventory count or not available in system itself
+$productList = urlencode(json_encode(array("iphone 6s"=>5,"Sony Bravia"=>2,"iphone 3s"=>1)));
+$url = "http://localhost/api/purchaseProducts.php";
+$post= array('action'=>'addProductsToCart','productList'=>$productList,'userName'=>'admin','apiKeyId'=>$apiKeyId,'requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+//partial success case 
+$productList = urlencode(json_encode(array("iphone 6s"=>1,"Sony Bravia"=>2,"iphone 3s"=>1)));
+$url = "http://localhost/api/purchaseProducts.php";
+$post= array('action'=>'addProductsToCart','productList'=>$productList,'userName'=>'admin','apiKeyId'=>$apiKeyId,'requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+Now let the cart table be as follows
+Carts table have following information
+cart_id   item_list  total_price   cart_status   user_id 
+1         NULL       0             empty        1
+2     {Bench:shirt}  50            InProcess    2
+
+test case for checking out cart
+
+//failure case for user admin as cart is empty
+$url = "http://localhost/api/purchaseProducts.php";
+$post = array('action'=>'checkOutCart','userName'=>urlencode('admin'),'apiKeyId'=>urlencode($apiKeyId),’requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+//success case for checkut will be when the cart status will be InProcess 
+$url = "http://localhost/api/purchaseProducts.php";
+$post = array('action'=>'checkOutCart','userName'=>urlencode('john'),'apiKeyId'=>urlencode($apiKeyId),’requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+
+test case for emptyCart
+
+//Success case for john as he has something in his cart
+$url = "http://localhost/api/purchaseProducts.php";
+$post = array('action'=>'checkOutCart','userName'=>urlencode('john'),'apiKeyId'=>urlencode($apiKeyId),’requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+
+//Failure case for admin as his cart is already empty
+$url = "http://localhost/api/purchaseProducts.php";
+$post = array('action'=>'checkOutCart','userName'=>urlencode('admin'),'apiKeyId'=>urlencode($apiKeyId),’requestSalt'=>urlencode($requestSalt),'requestToken'=>urlencode($requestToken));
+

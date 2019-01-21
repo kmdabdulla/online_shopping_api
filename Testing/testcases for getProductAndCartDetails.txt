@@ -1,0 +1,51 @@
+Assume only following products and inventory count exists in db
+id product    inventory count
+1  iphone 6s = 3
+2  Nexus = 2
+3  Sony bravia = 0 
+4  Bench Shirt = 1
+
+Carts table have following information
+cartid   item_list  total_price   cart_status   user_id 
+1         NULL       0             empty        1
+2    {Bench Shirt:1} 500            InProcess        2
+
+ 
+//test cases for getProductsByTitle method
+
+//complete success case 
+$productTitles =  urlencode(json_encode(array('iphone 6s','Nexus','Sony bravia'))); //request variable
+
+//Complete failure case 
+$productTitles =  urlencode(json_encode(array('philips trimmer','sandisk 16gb','iphone 5s'))); 
+
+//partial success case 
+$productTitles =  urlencode(json_encode(array('philips trimmer','sandisk 16gb','iphone 6s')));
+
+
+//test cases for getProductsByTitle method
+
+//complete success case 
+$productIds =  urlencode(json_encode(array('1','2','3'))); //request variable
+
+//Complete failure case 
+$productIds =  urlencode(json_encode(array('5','6','7'))); 
+
+//partial success case 
+$productIds =  urlencode(json_encode(array('5','6','1')));
+
+//test case for getCartDetails by cartId for user id 1
+
+//success case
+$url = "http://localhost/api/getProductAndCartDetails.php?action=getCartDetails&cartId=1";
+
+//failure case
+$url = "http://localhost/api/getProductAndCartDetails.php?action=getCartDetails&cartId=2";
+
+//test case for getCartDetails by cart status for user id 2
+//success case
+$url = "http://localhost/api/getProductAndCartDetails.php?action=getCartDetails&cartStatus=InProcess";
+
+//failure case
+$url = "http://localhost/api/getProductAndCartDetails.php?action=getCartDetails&cartStatus=empty";
+
